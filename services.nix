@@ -113,7 +113,16 @@
         client.autoStart = false;
         client.screenName = "box";
         client.serverAddress = "192.168.1.16:24800";
-      };
+    };
+
+    #actkbd = {
+    #  enable = true;
+    #  bindings = [
+    #    { keys = [ 113 ]; events = [ "key" ]; command = "${pkgs.alsaUtils}/bin/amixer -q set Master toggle"; }
+    #    { keys = [ 114 ]; events = [ "key" "rep" ]; command = "${pkgs.alsaUtils}/bin/amixer -q set Master ${config.sound.mediaKeys.volumeStep}- unmute"; }
+    #    { keys = [ 115 ]; events = [ "key" "rep" ]; command = "${pkgs.alsaUtils}/bin/amixer -q set Master ${config.sound.mediaKeys.volumeStep}+ unmute"; }
+    #  ];
+    #};
   };
 
 }

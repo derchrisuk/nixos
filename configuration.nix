@@ -79,5 +79,10 @@ in
   nix.useSandbox = true;
   powerManagement.enable = true;
 
+  #sound.mediaKeys = {
+  #  enable = true;
+  #  volumeStep = "5%";
+  #};
+
 }
 

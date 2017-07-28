@@ -84,6 +84,8 @@ in
       ndisc6
       dmidecode
       lshw
+      #mailutils
+      xfontsel
     ];
 
     variables = {
@@ -103,6 +105,93 @@ in
           sleep 60; pgrep i3lock && xset dpms force off
         '';
       };
+      "xresources" = {
+        text = ''
+          !XTerm*Background: black
+          XTerm*Foreground: white
+          !XTerm*faceName: Consolas
+          !XTerm*faceSize: 10
+          XTerm*font: -*-terminus-medium-*-*-*-14-*-*-*-*-*-iso10646-1
+          XTerm*font1: -*-terminus-medium-*-*-*-12-*-*-*-*-*-iso10646-1
+          XTerm*font2: -*-terminus-medium-*-*-*-14-*-*-*-*-*-iso10646-1
+          XTerm*font3: -*-terminus-medium-*-*-*-16-*-*-*-*-*-iso10646-1
+          XTerm*font4: -*-terminus-medium-*-*-*-18-*-*-*-*-*-iso10646-1
+          XTerm*font5: -*-terminus-medium-*-*-*-20-*-*-*-*-*-iso10646-1
+          XTerm*font6: -*-terminus-medium-*-*-*-22-*-*-*-*-*-iso10646-1
+          XTerm*font7: -*-terminus-medium-*-*-*-24-*-*-*-*-*-iso10646-1
+          XTerm*font8: -*-terminus-medium-*-*-*-28-*-*-*-*-*-iso10646-1
+          XTerm*font9: -*-terminus-medium-*-*-*-32-*-*-*-*-*-iso10646-1
+          XTerm*loginshell: true
+          XTerm*saveLines: 16384000
+          XTerm*charClass: 33:48,36-47:48,58-59:48,61:48,63-64:48,95:48,126:48
+          XTerm*scrollTtyOutput: false
+          XTerm*scrollKey: true
+          XTerm*termName: xterm-256color
+          XTerm*translations: #override \n\
+            Shift Ctrl <Key>C: copy-selection(CLIPBOARD) \n\
+            Shift Ctrl <Key>V: insert-selection(CLIPBOARD) \n\
+            Shift <KeyPress>Up :larger-vt-font() \n\
+            Shift <KeyPress>Down :smaller-vt-font() \n\
+            Shift <Btn1Up>: exec-formatted("chromium '%t'", PRIMARY)
+          XTerm*on3Clicks: regex ([[:alpha:]]+://)?([[:alnum:]!#+,./=?@_~-]|(%[[:xdigit:]][[:xdigit:]]))+
+
+          #define S_yellow        #b58900
+          #define S_orange        #cb4b16
+          #define S_red           #dc322f
+          #define S_magenta       #d33682
+          #define S_violet        #6c71c4
+          #define S_blue          #268bd2
+          #define S_cyan          #2aa198
+          #define S_green         #859900
+
+          ! Dark
+
+          #define S_base03        #002b36
+          #define S_base02        #073642
+          #define S_base01        #586e75
+          #define S_base00        #657b83
+          #define S_base0         #839496
+          #define S_base1         #93a1a1
+          #define S_base2         #eee8d5
+          #define S_base3         #fdf6e3
+
+          ! Light
+
+          !#define S_base03        #fdf6e3
+          !#define S_base02        #eee8d5
+          !#define S_base01        #93a1a1
+          !#define S_base00        #839496
+          !#define S_base0         #657b83
+          !#define S_base1         #586e75
+          !#define S_base2         #073642
+          !#define S_base3         #002b36
+
+          XTerm*background:              S_base03
+          !XTerm*foreground:              S_base0
+          XTerm*fading:                  40
+          XTerm*fadeColor:               S_base03
+          XTerm*cursorColor:             S_base1
+          XTerm*pointerColorBackground:  S_base01
+          XTerm*pointerColorForeground:  S_base1
+
+          *color0:                  S_base02
+          *color1:                  S_red
+          *color2:                  S_green
+          *color3:                  S_yellow
+          *color4:                  S_blue
+          *color5:                  S_magenta
+          *color6:                  S_cyan
+          *color7:                  S_base2
+          *color9:                  S_orange
+          *color8:                  S_base03
+          *color10:                 S_base01
+          *color11:                 S_base00
+          *color12:                 S_base0
+          *color13:                 S_violet
+          *color14:                 S_base1
+          *color15:                 S_base3
+        '';
+      };
       "i3config" = {
         text = ''
           set $mod Mod4
@@ -111,6 +200,8 @@ in
           bindsym $mod+l exec "~/bin/lock.sh" 
           exec --no-startup-id clipit
           exec i3-sensible-terminal
+          bindsym XF86AudioRaiseVolume exec --no-startup-id amixer -q set Master 5%+ unmute
+          bindsym XF86AudioLowerVolume exec --no-startup-id amixer -q set Master 5%- unmute
           bindsym $mod+Return exec i3-sensible-terminal
           bindsym $mod+Shift+q kill
           bindsym $mod+d exec /nix/store/9qsripch0whyv3xyd656rcmkbs9f21d2-dmenu-4.6/bin/dmenu_run

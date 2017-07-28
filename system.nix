@@ -17,6 +17,9 @@
         ${pkgs.coreutils}/bin/cp /etc/lock /home/derchris/bin/lock.sh
         ${pkgs.coreutils}/bin/chmod +x /home/derchris/bin/lock.sh
       '';
+      xresources = ''
+        ${pkgs.coreutils}/bin/ln -snf /etc/xresources /home/derchris/.Xresources
+      '';
     };
   };
 
