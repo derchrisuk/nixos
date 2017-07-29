@@ -59,7 +59,9 @@
       lidEventCommands = ''
         if grep -q closed /proc/acpi/button/lid/LID/state; then
           date >> /tmp/i3lock.log
-          DISPLAY=":0.0" XAUTHORITY=/home/derchris/.Xauthority ${pkgs.i3lock}/bin/i3lock &>> /tmp/i3lock.log
+          scrot /tmp/screen_locked.png
+          mogrify -scale 10% -scale 1000% /tmp/screen_locked.png
+          DISPLAY=":0.0" XAUTHORITY=/home/derchris/.Xauthority ${pkgs.i3lock}/bin/i3lock -i /tmp/screen_locked &>> /tmp/i3lock.log
           systemctl suspend
         fi
       '';

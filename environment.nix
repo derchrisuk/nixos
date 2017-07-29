@@ -86,6 +86,23 @@ in
       lshw
       #mailutils
       xfontsel
+      xorg.xmodmap
+      i3blocks
+      i3cat
+      weechat
+      dunst
+      libnotify
+      python27
+      automake
+      gnumake
+      ocaml_make
+      omake
+      opam
+      ocamlPackages.core
+      ocaml
+      ocamlPackages.findlib
+      ocamlPackages.camlp4
+      ocamlPackages.yojson
     ];
 
     variables = {
@@ -103,6 +120,144 @@ in
           mogrify -scale 10% -scale 1000% /tmp/screen_locked.png
           i3lock -i /tmp/screen_locked.png
           sleep 60; pgrep i3lock && xset dpms force off
+        '';
+      };
+      "dunstrc" = {
+        text = ''
+          # 
+          [global]
+              font = "FontAwesome, Noto Sans 11"
+              allow_markup = yes
+
+              # The format of the message. Possible variables are:
+              #   %a  appname
+              #   %s  summary
+              #   %b  body
+              #   %i  iconname (including its path)
+              #   %I  iconname (without its path)
+              #   %p  progress value if set ([  0%] to [100%]) or nothing
+              # Markup is allowed
+              format = "<b>  %s</b>\n%b"
+
+              sort = yes
+              indicate_hidden = yes
+              alignment = center
+              bounce_freq = 0
+              show_age_threshold = 60
+              word_wrap = yes
+              ignore_newline = no
+              geometry = "300x5+20-20"
+              transparency = 10
+              idle_threshold = 90
+              monitor = 0
+              follow = mouse
+              sticky_history = yes
+              line_height = 0
+              separator_height = 2
+              padding = 8
+              horizontal_padding = 8
+              separator_color = auto
+              startup_notification = true
+
+              # dmenu path
+              dmenu = /nix/store/9qsripch0whyv3xyd656rcmkbs9f21d2-dmenu-4.6/bin/dmenu_run -p dunst:
+
+              # browser for opening urls in context menu
+              browser = /home/derchris/.nix-profile/bin/chromium
+
+          [frame]
+              width = 2
+              color = "#00c3ff"
+
+          [shortcuts]
+              close = ctrl+space
+              close_all = ctrl+shift+space
+              history = ctrl+grave
+              context = ctrl+shift+period
+
+          [urgency_low]
+              background = "#1D596B"
+              foreground = "#7BA8B5"
+              timeout = 10
+
+          [urgency_normal]
+              background = "#E3AD0B"
+              foreground = "#524218"
+              timeout = 10
+
+          [urgency_critical]
+              background = "#BA3220"
+              foreground = "#F0D1C5"
+              timeout = 0
+
+          [scrot]
+              summary = scrot
+              format = "<b>  %s</b>\n%b"
+
+          [usb]
+              summary = Automount
+              format = "<b> %s</b>\n%b"
+
+          [weechat]
+              appname = weechat
+              format = "<b>  %s</b>\n%b"
+        '';
+      };
+      "i3blocks" = {
+        text = ''
+          interval=5
+          signal=10
+
+          [iface]
+        '';
+      };
+      "i3cat" = {
+        text = ''
+          /nix/store/zfxa73x17db8xw20k9np3lxymibx0fqg-i3status-2.11/bin/i3status -c ~/.config/i3status/config
+        '';
+      };
+      "i3status" = {
+        text = ''
+          general {
+                  colors = true
+                  interval = 5
+                  output_format = i3bar
+          }
+
+          order += "ipv6"
+          order += "disk /"
+          order += "wireless _first_"
+          order += "ethernet _first_"
+          order += "battery all"
+          order += "load"
+          order += "tztime local"
+
+          wireless _first_ {
+                  format_up = "W: (%quality at %essid) %ip"
+                  format_down = "W: down"
+          }
+
+          ethernet _first_ {
+                  # if you use %speed, i3status requires root privileges
+                  format_up = "E: %ip (%speed)"
+                  format_down = "E: down"
+          }
+
+          battery all {
+                  format = "%status %percentage %remaining"
+          }
+
+          tztime local {
+                  format = "%Y-%m-%d %H:%M:%S"
+          }
+
+          load {
+                  format = "%1min"
+          }
+
+          disk "/" {
+                  format = "%avail"
+          }
         '';
       };
       "xresources" = {
@@ -127,6 +282,8 @@ in
           XTerm*scrollTtyOutput: false
           XTerm*scrollKey: true
           XTerm*termName: xterm-256color
+          !XTerm*metaSendsEscape: true
+          XTerm*bellIsUrgent: true
           XTerm*translations: #override \n\
             Shift Ctrl <Key>C: copy-selection(CLIPBOARD) \n\
             Shift Ctrl <Key>V: insert-selection(CLIPBOARD) \n\
@@ -196,10 +353,22 @@ in
         text = ''
           set $mod Mod4
           font pango:monospace 8
+          #font pango:FontAwesome 8, pango: Droid Sans Mono 8
           floating_modifier $mod
           bindsym $mod+l exec "~/bin/lock.sh" 
           exec --no-startup-id clipit
-          exec i3-sensible-terminal
+          exec --no-startup-id dunst -config ~/.config/dunstrc
+          exec --no-startup-id i3-sensible-terminal -name weechat weechat
+          exec --no-startup-id chromium
+          exec --no-startup-id i3-sensible-terminal -name xterm
+          set $tag1 "1: irc"
+          set $tag2 "2: www"
+          set $tag3 "3: term"
+          assign [instance=weechat] $tag1
+          assign [instance=chromium] $tag2
+          assign [instance=xterm] $tag3
+          for_window [instance=chromium] layout tabbed
+          for_window [instance=weechat] focus
           bindsym XF86AudioRaiseVolume exec --no-startup-id amixer -q set Master 5%+ unmute
           bindsym XF86AudioLowerVolume exec --no-startup-id amixer -q set Master 5%- unmute
           bindsym $mod+Return exec i3-sensible-terminal
@@ -226,9 +395,9 @@ in
           bindsym $mod+Shift+space floating toggle
           bindsym $mod+space focus mode_toggle
           bindsym $mod+a focus parent
-          bindsym $mod+1 workspace 1
-          bindsym $mod+2 workspace 2
-          bindsym $mod+3 workspace 3
+          bindsym $mod+1 workspace $tag1
+          bindsym $mod+2 workspace $tag2
+          bindsym $mod+3 workspace $tag3
           bindsym $mod+4 workspace 4
           bindsym $mod+5 workspace 5
           bindsym $mod+6 workspace 6
@@ -263,8 +432,11 @@ in
           }
           bindsym $mod+r mode "resize"
           bar {
-                  status_command /nix/store/zfxa73x17db8xw20k9np3lxymibx0fqg-i3status-2.11/bin/i3status
+                  status_command i3cat -cmd-file ~/.config/i3cat/config
           }
+          workspace_auto_back_and_forth yes
+          force_display_urgency_hint 0 ms
+          focus_on_window_activation urgent
           '';
       };
       "vimrc" = {
